@@ -1,0 +1,542 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#0b0b0c">
+<title>MZ Treino Inteligente 2.0</title>
+
+<style>
+:root {
+  --gold:#d4af37;
+  --bg:#0b0b0c;
+  --card:#181818;
+  --text:#f5f5f5;
+  --muted:#aaa;
+}
+*{box-sizing:border-box}
+body{
+  margin:0;
+  background:var(--bg);
+  color:var(--text);
+  font-family:Arial,sans-serif;
+}
+header{
+  padding:25px 15px;
+  text-align:center;
+  border-bottom:1px solid var(--gold);
+}
+header h1{
+  color:var(--gold);
+  margin:0;
+  letter-spacing:2px;
+}
+header p{color:var(--muted);font-size:13px}
+nav{
+  display:flex;
+  overflow-x:auto;
+  gap:7px;
+  padding:12px;
+  background:#111;
+}
+button{
+  background:var(--gold);
+  color:#111;
+  border:0;
+  border-radius:7px;
+  padding:11px 13px;
+  font-weight:bold;
+  cursor:pointer;
+}
+nav button{
+  white-space:nowrap;
+  background:#292929;
+  color:white;
+}
+nav button.active{background:var(--gold);color:#111}
+main{padding:15px;max-width:850px;margin:auto}
+.card{
+  background:var(--card);
+  padding:16px;
+  border-radius:12px;
+  margin-bottom:15px;
+  border:1px solid #303030;
+}
+h2,h3{color:var(--gold)}
+label{
+  display:block;
+  color:#ddd;
+  margin:12px 0 5px;
+}
+input,select,textarea{
+  width:100%;
+  padding:12px;
+  border-radius:7px;
+  border:1px solid #444;
+  background:#222;
+  color:white;
+  font-size:15px;
+}
+.exercise{
+  background:#242424;
+  padding:13px;
+  border-radius:9px;
+  margin:10px 0;
+}
+.exercise strong{color:var(--gold)}
+.exercise small{color:#bbb}
+.row{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}
+.row button{flex:1}
+.secondary{background:#444;color:white}
+.danger{background:#8b2525;color:white}
+.hidden{display:none!important}
+.stat{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:10px;
+}
+.stat div{
+  background:#222;
+  padding:16px;
+  border-radius:9px;
+}
+.stat strong{color:var(--gold);font-size:22px}
+footer{
+  text-align:center;
+  padding:25px;
+  color:#777;
+  font-size:12px;
+}
+</style>
+</head>
+
+<body>
+
+<header>
+<h1>MZ TREINO INTELIGENTE</h1>
+<p>DISCIPLINA • EVOLUÇÃO • RESULTADOS</p>
+<strong style="color:var(--gold)">VERSÃO 2.0</strong>
+</header>
+
+<nav>
+<button class="active" onclick="showTab('inicio',this)">Início</button>
+<button onclick="showTab('treinos',this)">Treinos</button>
+<button onclick="showTab('historico',this)">Histórico</button>
+<button onclick="showTab('evolucao',this)">Evolução</button>
+<button onclick="showTab('fotos',this)">Fotos</button>
+<button onclick="showTab('backup',this)">Backup</button>
+</nav>
+
+<main>
+
+<section id="inicio">
+<div class="card">
+<h2>Bem-vindo ao MZ!</h2>
+<p>Seu espaço pessoal de acompanhamento e evolução muscular.</p>
+<div class="stat">
+<div><small>Treinos registrados</small><br><strong id="totalTreinos">0</strong></div>
+<div><small>Último peso</small><br><strong id="pesoAtual">--</strong></div>
+</div>
+</div>
+
+<div class="card">
+<h3>Seu objetivo</h3>
+<p>Construir massa muscular, melhorar o condicionamento e acompanhar a redução de gordura corporal.</p>
+</div>
+
+<div class="card">
+<h3>Frase MZ</h3>
+<p style="color:var(--gold)">AÇO NA ALMA. DISCIPLINA NO TREINO.</p>
+</div>
+</section>
+
+<section id="treinos" class="hidden">
+<div class="card">
+<h2>Minha programação</h2>
+<label>Selecione o dia</label>
+<select id="dia" onchange="renderTreino()">
+<option>Segunda-feira</option>
+<option>Terça-feira</option>
+<option>Quarta-feira</option>
+<option>Quinta-feira</option>
+<option>Sexta-feira</option>
+<option>Sábado</option>
+<option>Domingo</option>
+</select>
+<div id="listaExercicios"></div>
+<div class="row">
+<button onclick="novoExercicio()">+ Adicionar exercício</button>
+<button onclick="registrarTreino()">Finalizar treino</button>
+</div>
+</div>
+
+<div class="card">
+<h3>Adicionar ou editar exercício</h3>
+<input type="hidden" id="editId">
+<label>Nome do exercício</label>
+<input id="nome" placeholder="Ex: Supino reto">
+<label>Séries</label>
+<input id="series" type="number" min="1" value="3">
+<label>Repetições</label>
+<input id="reps" placeholder="Ex: 10 a 12">
+<label>Carga (kg)</label>
+<input id="carga" type="number" step="0.5" placeholder="Ex: 40">
+<label>Observações</label>
+<input id="obs" placeholder="Ex: Aumentar carga progressivamente">
+<button style="width:100%;margin-top:15px" onclick="salvarExercicio()">Salvar exercício</button>
+</div>
+</section>
+
+<section id="historico" class="hidden">
+<div class="card">
+<h2>Histórico de treinos</h2>
+<div id="listaHistorico"></div>
+</div>
+</section>
+
+<section id="evolucao" class="hidden">
+<div class="card">
+<h2>Acompanhamento corporal</h2>
+<label>Data</label>
+<input type="date" id="dataMedida">
+<label>Peso corporal (kg)</label>
+<input type="number" id="peso" step="0.1">
+<label>Cintura (cm)</label>
+<input type="number" id="cintura" step="0.1">
+<button style="width:100%;margin-top:15px" onclick="salvarMedida()">Registrar medidas</button>
+</div>
+<div class="card">
+<h3>Minha evolução</h3>
+<div id="listaMedidas"></div>
+</div>
+</section>
+
+<section id="fotos" class="hidden">
+<div class="card">
+<h2>Fotos de evolução</h2>
+<p>Registre suas mudanças físicas ao longo do tempo.</p>
+<label>Selecionar fotografia</label>
+<input type="file" id="fotoArquivo" accept="image/*">
+<button style="width:100%;margin-top:15px" onclick="salvarFoto()">Salvar fotografia</button>
+<div id="galeria" style="margin-top:20px"></div>
+</div>
+</section>
+
+<section id="backup" class="hidden">
+<div class="card">
+<h2>Segurança dos dados</h2>
+<p>Faça cópias dos seus registros para evitar perder informações.</p>
+<button style="width:100%" onclick="exportarDados()">Baixar backup</button>
+<label>Restaurar backup JSON</label>
+<input type="file" id="arquivoBackup" accept=".json">
+<button style="width:100%;margin-top:12px" onclick="importarDados()">Restaurar dados</button>
+<p style="color:#aaa;font-size:12px">Os dados são armazenados neste navegador. Faça backups regularmente.</p>
+</div>
+</section>
+
+</main>
+
+<footer>
+MZ TREINO INTELIGENTE 2.0<br>
+A evolução começa com disciplina.
+</footer>
+
+<script>
+const chave = "MZ_TREINO_INTELIGENTE_2";
+const dias = [
+"Segunda-feira","Terça-feira","Quarta-feira",
+"Quinta-feira","Sexta-feira","Sábado","Domingo"
+];
+
+let dados = JSON.parse(localStorage.getItem(chave)) || {
+treinos:{},
+historico:[],
+medidas:[],
+fotos:[]
+};
+
+dias.forEach(d=>{
+if(!dados.treinos[d]) dados.treinos[d]=[];
+});
+
+let proximoId = 1;
+
+function salvar(){
+localStorage.setItem(chave,JSON.stringify(dados));
+atualizarInicio();
+}
+
+function showTab(id,botao){
+document.querySelectorAll("main section").forEach(s=>s.classList.add("hidden"));
+document.getElementById(id).classList.remove("hidden");
+document.querySelectorAll("nav button").forEach(b=>b.classList.remove("active"));
+botao.classList.add("active");
+
+if(id==="treinos") renderTreino();
+if(id==="historico") renderHistorico();
+if(id==="evolucao") renderMedidas();
+if(id==="fotos") renderFotos();
+}
+
+function renderTreino(){
+let dia=document.getElementById("dia").value;
+let lista=dados.treinos[dia]||[];
+let html="";
+
+lista.forEach((e,i)=>{
+html+=`
+<div class="exercise">
+<strong>${e.nome}</strong><br>
+<small>${e.series} séries • ${e.reps} repetições • ${e.carga||0} kg</small>
+${e.obs?`<p>${e.obs}</p>`:""}
+<div class="row">
+<button onclick="editarExercicio(${i})">Editar</button>
+<button class="danger" onclick="excluirExercicio(${i})">Excluir</button>
+</div>
+</div>`;
+});
+
+document.getElementById("listaExercicios").innerHTML=
+html||"<p>Nenhum exercício cadastrado neste dia.</p>";
+}
+
+function novoExercicio(){
+limparFormulario();
+document.getElementById("nome").focus();
+}
+
+function limparFormulario(){
+["editId","nome","reps","carga","obs"].forEach(id=>{
+document.getElementById(id).value="";
+});
+document.getElementById("series").value=3;
+}
+
+function salvarExercicio(){
+let dia=document.getElementById("dia").value;
+let nome=document.getElementById("nome").value.trim();
+let series=document.getElementById("series").value;
+let reps=document.getElementById("reps").value.trim();
+let carga=document.getElementById("carga").value;
+let obs=document.getElementById("obs").value.trim();
+let id=document.getElementById("editId").value;
+
+if(!nome){alert("Digite o nome do exercício.");return;}
+
+let exercicio={nome,series,reps,carga,obs};
+
+if(id===""){
+dados.treinos[dia].push(exercicio);
+}else{
+dados.treinos[dia][Number(id)]=exercicio;
+}
+
+salvar();
+limparFormulario();
+renderTreino();
+alert("Exercício salvo!");
+}
+
+function editarExercicio(i){
+let e=dados.treinos[document.getElementById("dia").value][i];
+document.getElementById("editId").value=i;
+document.getElementById("nome").value=e.nome;
+document.getElementById("series").value=e.series;
+document.getElementById("reps").value=e.reps;
+document.getElementById("carga").value=e.carga;
+document.getElementById("obs").value=e.obs;
+window.scrollTo(0,document.body.scrollHeight);
+}
+
+function excluirExercicio(i){
+if(!confirm("Excluir este exercício?"))return;
+let dia=document.getElementById("dia").value;
+dados.treinos[dia].splice(i,1);
+salvar();
+renderTreino();
+}
+
+function registrarTreino(){
+let dia=document.getElementById("dia").value;
+if(!dados.treinos[dia].length){
+alert("Adicione exercícios antes de finalizar.");
+return;
+}
+
+dados.historico.unshift({
+dia,
+data:new Date().toLocaleDateString("pt-BR"),
+exercicios:JSON.parse(JSON.stringify(dados.treinos[dia]))
+});
+
+salvar();
+alert("Treino registrado com sucesso!");
+}
+
+function renderHistorico(){
+let html="";
+dados.historico.forEach((h,i)=>{
+html+=`
+<div class="exercise">
+<strong>${h.dia}</strong><br>
+<small>${h.data}</small>
+<p>${h.exercicios.map(e=>e.nome).join(", ")}</p>
+<button class="danger" onclick="excluirHistorico(${i})">Excluir registro</button>
+</div>`;
+});
+document.getElementById("listaHistorico").innerHTML=
+html||"<p>Nenhum treino registrado.</p>";
+}
+
+function excluirHistorico(i){
+if(!confirm("Excluir este registro?"))return;
+dados.historico.splice(i,1);
+salvar();
+renderHistorico();
+}
+
+function salvarMedida(){
+let peso=document.getElementById("peso").value;
+let cintura=document.getElementById("cintura").value;
+let data=document.getElementById("dataMedida").value;
+
+if(!peso&&!cintura){alert("Informe pelo menos uma medida.");return;}
+
+dados.medidas.unshift({
+peso,cintura,data:data||new Date().toISOString().slice(0,10)
+});
+
+salvar();
+renderMedidas();
+alert("Medidas registradas!");
+}
+
+function renderMedidas(){
+let html="";
+dados.medidas.forEach((m,i)=>{
+html+=`
+<div class="exercise">
+<strong>${m.data}</strong><br>
+Peso: ${m.peso||"--"} kg<br>
+Cintura: ${m.cintura||"--"} cm
+<button class="danger" onclick="excluirMedida(${i})">Excluir</button>
+</div>`;
+});
+document.getElementById("listaMedidas").innerHTML=
+html||"<p>Nenhuma medida registrada.</p>";
+}
+
+function excluirMedida(i){
+if(!confirm("Excluir medida?"))return;
+dados.medidas.splice(i,1);
+salvar();
+renderMedidas();
+}
+
+function abrirBanco(){
+return new Promise((resolve,reject)=>{
+let req=indexedDB.open("MZ_FOTOS",1);
+req.onupgradeneeded=()=>{
+req.result.createObjectStore("fotos",{keyPath:"id",autoIncrement:true});
+};
+req.onsuccess=()=>resolve(req.result);
+req.onerror=()=>reject(req.error);
+});
+}
+
+async function salvarFoto(){
+let arquivo=document.getElementById("fotoArquivo").files[0];
+if(!arquivo){alert("Selecione uma foto.");return;}
+
+try{
+let banco=await abrirBanco();
+let tx=banco.transaction("fotos","readwrite");
+tx.objectStore("fotos").add({
+imagem:arquivo,
+data:new Date().toLocaleDateString("pt-BR")
+});
+tx.oncomplete=()=>{
+alert("Foto salva!");
+renderFotos();
+};
+}catch(e){
+alert("Não foi possível salvar a foto.");
+}
+}
+
+async function renderFotos(){
+let banco=await abrirBanco();
+let tx=banco.transaction("fotos","readonly");
+let req=tx.objectStore("fotos").getAll();
+
+req.onsuccess=()=>{
+let html="";
+req.result.forEach(f=>{
+let url=URL.createObjectURL(f.imagem);
+html+=`
+<div class="exercise">
+<img src="${url}" style="width:100%;border-radius:8px">
+<p>${f.data}</p>
+<button class="danger" onclick="excluirFoto(${f.id})">Excluir foto</button>
+</div>`;
+});
+document.getElementById("galeria").innerHTML=
+html||"<p>Nenhuma foto salva.</p>";
+};
+}
+
+async function excluirFoto(id){
+if(!confirm("Excluir fotografia?"))return;
+let banco=await abrirBanco();
+let tx=banco.transaction("fotos","readwrite");
+tx.objectStore("fotos").delete(id);
+tx.oncomplete=renderFotos;
+}
+
+function exportarDados(){
+let arquivo=new Blob([JSON.stringify(dados,null,2)],{type:"application/json"});
+let url=URL.createObjectURL(arquivo);
+let a=document.createElement("a");
+a.href=url;
+a.download="MZ_Backup.json";
+a.click();
+URL.revokeObjectURL(url);
+}
+
+function importarDados(){
+let arquivo=document.getElementById("arquivoBackup").files[0];
+if(!arquivo){alert("Selecione um backup.");return;}
+let leitor=new FileReader();
+
+leitor.onload=()=>{
+try{
+let novo=JSON.parse(leitor.result);
+if(!novo.treinos||!novo.historico||!novo.medidas){
+throw new Error("Arquivo inválido");
+}
+if(!confirm("Isso substituirá os dados atuais. Continuar?"))return;
+dados=novo;
+salvar();
+renderTreino();
+alert("Backup restaurado!");
+}catch(e){
+alert("Arquivo de backup inválido.");
+}
+};
+leitor.readAsText(arquivo);
+}
+
+function atualizarInicio(){
+document.getElementById("totalTreinos").textContent=dados.historico.length;
+document.getElementById("pesoAtual").textContent=
+dados.medidas.length?
+dados.medidas[0].peso+" kg":"--";
+}
+
+atualizarInicio();
+document.getElementById("dataMedida").value=
+new Date().toISOString().slice(0,10);
+</script>
+
+</body>
+</html>
