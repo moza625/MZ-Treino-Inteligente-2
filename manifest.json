@@ -1,0 +1,18 @@
+{
+  "name": "MZ Treino Inteligente",
+  "short_name": "MZ Treino",
+  "description": "Acompanhe sua evolução com MZ Treino Inteligente",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#000000",
+  "theme_color": "#000000",
+  "icons": [
+    {
+      "src": "./assets/mz-logo.png",
+      "sizes": "125x91",
+      "type": "image/png"
+    }
+  ]
+}
